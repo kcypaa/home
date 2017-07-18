@@ -15,6 +15,7 @@ var Data = {
 
                     Data.titles.titlesJSON = JSON.parse(result);
                     Data.titles.keys = Object.keys(Data.titles.titlesJSON);
+                    // m.redraw()
                 })
         }
     },
@@ -50,31 +51,45 @@ blogComponent = {
     }
 }
 
+// titles = {
+//     oninit: Data.titles.fetch,
+//     view: function() {
+
+//         return m('.demo-card-square mdl-card mdl-shadow--2dp',
+//             m('.mdl-card__title mdl-card--expand',
+//                 Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
+//                     return m('h2.mdl-card__title-text', {
+//                          onmouseover: function() {
+//                                 console.log(Data.titles.titlesJSON[key].title)
+
+//                          },
+//                         onclick: function() {
+//                             console.log(key)
+//                             currentIdx=key;
+//                             m.mount(document.body, blogComponent)
+//                         }
+//                     }, m('.major.blogTitles',
+                        
+//                         Data.titles.titlesJSON[key].title))
+
+                    
+//                 }) : m('')
+//             ))
+
 titles = {
     oninit: Data.titles.fetch,
     view: function() {
 
-        return m('.gallery',
-            m('.group.span-' + parseInt(Data.titles.keys.length),
-                Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
-                    return m('.image.filtered.span-1-5', {
-                         onmouseover: function() {
-                                console.log(Data.titles.titlesJSON[key].title)
-
-                         },
-                        onclick: function() {
-                            console.log(key)
-                            currentIdx=key;
-                            m.mount(document.body, blogComponent)
-                        }
-                    }, m('.major.blogTitles',
-                        
-                        Data.titles.titlesJSON[key].title))
-
-                    
-                }) : m('')
-            ))
-
+         return Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
+            return m('.demo-card-square.mdl-card mdl-shadow--2dp',
+                    m('.mdl-card__title mdl-card--expand',
+                        m('h6.mdl-card__title-text',Data.titles.titlesJSON[key].title)),
+                    m('.mdl-card__supporting-text','Lorem ipsum dolor sit amet, consectetur adipiscing elit.Aenan convallis.'),
+                    m('.mdl-card__actions mdl-card--border',
+                        m('a.mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect','View')
+                        )
+                )
+         }):m('','nothing')
 
     }
 }
