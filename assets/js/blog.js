@@ -14,6 +14,7 @@ var Data = {
                 .then(function(result) {
 
                     Data.titles.titlesJSON = JSON.parse(result);
+                    console.log(result)
                     Data.titles.keys = Object.keys(Data.titles.titlesJSON);
                     // m.redraw()
                 })
@@ -45,7 +46,7 @@ blogComponent = {
      
 
         return (blogResponse!="")?m("main.blog", m('',
-            m("h1", { class: "title" }, "My first app"),
+            m("h1", { class: "title" }, blogResponse.title),
             m(".", m.trust(markdown.toHTML(blogResponse.body)))
         )):m('')
     }
@@ -78,15 +79,24 @@ blogComponent = {
 
 titles = {
     oninit: Data.titles.fetch,
-    view: function() {
+    view: function() {  
+
 
          return Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
             return m('.demo-card-square.mdl-card mdl-shadow--2dp',
                     m('.mdl-card__title mdl-card--expand',
                         m('h6.mdl-card__title-text',Data.titles.titlesJSON[key].title)),
-                    m('.mdl-card__supporting-text','Lorem ipsum dolor sit amet, consectetur adipiscing elit.Aenan convallis.'),
+                    m('.mdl-card__supporting-text','Lorem ipsum dolor sit amet, consectetur adipiscing elit.Aenan convallis.',
+                        m('.date',Data.titles.titlesJSON[key].modifiedDate)),
                     m('.mdl-card__actions mdl-card--border',
-                        m('a.mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect','View')
+                        m('a.mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect',{
+                             onclick: function() {
+                            console.log(Data.titles.titlesJSON[key].id)
+                            currentIdx=Data.titles.titlesJSON[key].id;
+                             m.mount(document.body, blogComponent)
+                        }
+
+                        },'View')
                         )
                 )
          }):m('','nothing')

@@ -22,12 +22,13 @@ def allTitles(request):
 		payload_json = json.loads(payload_unicode)
 		if (payload_json['field'] == 'titles'):
 
-			titles = blog.objects.values_list('id','title','modifiedDate')
-			
+			titles = blog.objects.values_list('id','title','modifiedDate','blogId')
+
 			for idx,title in enumerate(titles):
 				print(title)
 				data[idx]={"title":title[1],
-							"modifiedDate":str(title[2])
+							"modifiedDate":str(title[2]),
+							"id":title[0]
 								
 				}
 				# print(modifiedDate[idx][1])
@@ -37,9 +38,9 @@ def allTitles(request):
 			
 		elif (payload_json['field'] == 'post'):
 
-			obj = blog.objects.get(blogId=payload_json['idx'])
-			print(obj.body)
-			data={"body":obj.body}
+			obj = blog.objects.get(id=payload_json['idx'])
+			
+			data={"body":obj.body,"title":obj.title}
 			jsnData = json.dumps(data)
 		else:
 			jsnData = "{}"
