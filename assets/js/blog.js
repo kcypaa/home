@@ -1,5 +1,6 @@
 blog = document.getElementById("blog");
 blogResponse=""
+server = "http://127.0.0.1:8000"
 var currentIdx
 var Data = {
     titles: {
@@ -8,7 +9,7 @@ var Data = {
         fetch: function() {
             m.request({
                     method: "POST",
-                    url: "http://127.0.0.1:8000/blog/all/",
+                    url: server+"/blog/all/",
                     data: { 'field':'titles' }
                 })
                 .then(function(result) {
@@ -25,7 +26,7 @@ var Data = {
         fetch: function() {
             m.request({
                     method: "POST",
-                    url: "http://127.0.0.1:8000/blog/all/",
+                    url: server+"/blog/all/",
                     data: { 'field':'post','idx':currentIdx }
                 })
                 .then(function(result) {
@@ -46,7 +47,7 @@ blogComponent = {
      
 
         return (blogResponse!="")?m("main.blog", m('',
-            m("h1", { class: "title" }, blogResponse.title),
+            m('.parallax',m("h1", { class: "title" }, blogResponse.title)),
             m(".", m.trust(markdown.toHTML(blogResponse.body)))
         )):m('')
     }

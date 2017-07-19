@@ -25,7 +25,7 @@ SECRET_KEY = 'dvke&q)&0u%6%egq4-4j7@mq#08k=f6l0e+l15e%$o50cwluuo'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1:8000","127.0.0.1","dev.laxaret"]
+ALLOWED_HOSTS = ["127.0.0.1:8000","127.0.0.1","dev.laxaret","www.pharzan.com","pharzan.com"]
 
 
 # Application definition
