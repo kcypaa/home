@@ -24,7 +24,7 @@ var Data = {
     post: {
         body: {},
         fetch: function() {
-            m.request({
+            return m.request({
                     method: "POST",
                     url: server+"/blog/all/",
                     data: { 'field':'post','idx':currentIdx }
@@ -35,6 +35,7 @@ var Data = {
                     
                     // Data.titles.titlesJSON = JSON.parse(result);
                     // Data.titles.keys = Object.keys(Data.titles.titlesJSON);
+                    return blogResponse;
                 })
         }
     }
@@ -53,34 +54,9 @@ blogComponent = {
     }
 }
 
-// titles = {
-//     oninit: Data.titles.fetch,
-//     view: function() {
-
-//         return m('.demo-card-square mdl-card mdl-shadow--2dp',
-//             m('.mdl-card__title mdl-card--expand',
-//                 Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
-//                     return m('h2.mdl-card__title-text', {
-//                          onmouseover: function() {
-//                                 console.log(Data.titles.titlesJSON[key].title)
-
-//                          },
-//                         onclick: function() {
-//                             console.log(key)
-//                             currentIdx=key;
-//                             m.mount(document.body, blogComponent)
-//                         }
-//                     }, m('.major.blogTitles',
-                        
-//                         Data.titles.titlesJSON[key].title))
-
-                    
-//                 }) : m('')
-//             ))
-
 titles = {
     oninit: Data.titles.fetch,
-    view: function() {  
+    view: function(vnode) {  
 
 
          return Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
@@ -94,7 +70,8 @@ titles = {
                              onclick: function() {
                             console.log(Data.titles.titlesJSON[key].id)
                             currentIdx=Data.titles.titlesJSON[key].id;
-                             m.mount(document.body, blogComponent)
+                             // m.mount(document.body, blogComponent)
+                            m.route.set("/entry/"+currentIdx)
                         }
 
                         },'View')
@@ -104,5 +81,29 @@ titles = {
 
     }
 }
+var blogEntry = {
+    oninit:function(vnode){
+            currentIdx=vnode.attrs.id
 
-m.mount(blog, titles)
+            Data.post.fetch().then(function(){
+                console.log("blog entry retrieved")
+            })
+            
+        },
+    view: function(vnode) {
+        return (blogResponse!="")?m("main.blog", m('',
+            m('.parallax',m('button',
+                {onclick:function(){
+                    m.route.set('/')}
+            },
+                'back')
+                ,m("h1", { class: "title" }, blogResponse.title)),
+            m(".", m.trust(markdown.toHTML(blogResponse.body)))
+        )):m('')
+    }
+}
+m.route.prefix("#")
+m.route(blog, "/", {
+    "/": titles,
+    "/entry/:id":blogEntry
+})
