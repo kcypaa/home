@@ -43,7 +43,7 @@ var Data = {
 
 blogComponent = {
     oninit:Data.post.fetch,
-
+    oncreate:m.route.link,
     view: function() {
      
 
@@ -92,11 +92,15 @@ var blogEntry = {
         },
     view: function(vnode) {
         return (blogResponse!="")?m("main.blog", m('',
-            m('.parallax',m('button',
-                {onclick:function(){
-                    m.route.set('/')}
-            },
-                'back')
+            m('.parallax',
+                m('button.mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored',
+                    {onclick:function(){
+                    m.route.set('/')
+
+                }
+
+            },m('i.material-icons','keyboard_arrow_left')
+                )
                 ,m("h1", { class: "title" }, blogResponse.title)),
             m(".", m.trust(markdown.toHTML(blogResponse.body)))
         )):m('')
