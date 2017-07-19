@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from blog.models import blog
+from blog.models import category
 import json
 from django.http import JsonResponse
 import time
@@ -22,14 +23,19 @@ def allTitles(request):
 		payload_json = json.loads(payload_unicode)
 		if (payload_json['field'] == 'titles'):
 
-			titles = blog.objects.values_list('id','title','modifiedDate','blogId')
+			titles = blog.objects.values_list('id','title','modifiedDate','blogId','category')
+			categories = category.objects.values_list('id','title')
 
 			for idx,title in enumerate(titles):
-				print(title)
+				cat='undefined'
+				for _category in enumerate(categories):
+					if _category[1][0]==title[4]:
+						cat=_category[1][1]
+
 				data[idx]={"title":title[1],
 							"modifiedDate":str(title[2]),
-							"id":title[0]
-								
+							"id":title[0],
+							"category":cat
 				}
 				# print(modifiedDate[idx][1])
 
@@ -42,6 +48,11 @@ def allTitles(request):
 			
 			data={"body":obj.body,"title":obj.title}
 			jsnData = json.dumps(data)
+		elif (payload_json['field'] == 'categories'):
+			categories = category.objects.values_list('id','title')
+			for idx,_category in enumerate(categories):
+				data[_category[0]] =_category[1]
+			jsnData=json.dumps(data)
 		else:
 			jsnData = "{}"
 		return JsonResponse(jsnData,safe=False)
