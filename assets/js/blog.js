@@ -67,20 +67,21 @@ var Data = {
 
 }
 
-blogComponent = {
+var blogComponent = {
     oninit: Data.post.fetch,
     oncreate: m.route.link,
     view: function() {
 
 
         return (blogResponse != "") ? m("main.blog", m('',
-            m('.parallax', m("h1", { class: "title" }, blogResponse.title)),
+            m('.parallax',
+                m("h1", { class: "title" }, blogResponse.title)),
             m(".", m.trust(markdown.toHTML(blogResponse.body)))
         )) : m(loader)
     }
 }
 
-categoriesComponent = {
+var categoriesComponent = {
     oninit: function() {
         self = this;
         self.selected = { items: [] };
@@ -101,97 +102,95 @@ categoriesComponent = {
     view: function() {
         var me = this
         return [Data.categories.keys ? Data.categories.keys.map(function(key) {
-                return m('span.mdl-chip mdl-chip--deletable',
-                    m('span.mdl-chip__text', {
-                        oncreate: function() {
-                            value = Data.categories.categoriesJSON[key]
+            return m('span.mdl-chip mdl-chip--deletable',
+                m('span.mdl-chip__text', {
+                    oncreate: function() {
+                        value = Data.categories.categoriesJSON[key]
 
-                            me.selected.items.push({
-                                category: value,
-                                selected: true
+                        me.selected.items.push({
+                            category: value,
+                            selected: true
+                        })
+                        // console.log(typeof me.selected.items)
+                    }
+                }, Data.categories.categoriesJSON[key]),
+                m('button.mdl-chip__action', {},
+                    m('i.material-icons', {
+                        innerText: 'check_circle',
+                        onclick: function() {
+                            _self = this;
+
+                            me.selected.items.map(function(item) {
+
+                                if (item.category == Data.categories.categoriesJSON[key]) {
+                                    item.selected = !item.selected
+                                    if (item.selected == false) {
+                                        _self.innerText = 'cancel';
+                                        // console.log('hide',item)
+                                        var titles = Data.titles.titlesJSON;
+                                        var keys = Data.titles.keys;
+                                        keys.map(function(key) {
+                                            console.log(titles[key].category == item.category)
+                                            if (titles[key].category == item.category) {
+                                                titles[key].show = false;
+                                            }
+
+                                        })
+                                    }
+                                    if (item.selected == true) {
+                                        _self.innerText = 'check_circle';
+                                        console.log('show', item.category)
+                                        var titles = Data.titles.titlesJSON;
+                                        var keys = Data.titles.keys;
+                                        keys.map(function(key) {
+                                            console.log(titles[key].category == item.category)
+                                            if (titles[key].category == item.category) {
+                                                titles[key].show = true;
+                                            }
+                                        })
+                                    }
+                                }
                             })
-                            // console.log(typeof me.selected.items)
                         }
-                    }, Data.categories.categoriesJSON[key]),
-                    m('button.mdl-chip__action', {},
-                        m('i.material-icons', {
-                                innerText: 'check_circle',
-                                onclick: function() {
-                                    _self = this;
-
-                                    me.selected.items.map(function(item) {
-
-                                            if (item.category == Data.categories.categoriesJSON[key]) {
-                                                item.selected = !item.selected
-                                                if (item.selected == false) {
-                                                    _self.innerText = 'cancel';
-                                                    // console.log('hide',item)
-                                                    var titles = Data.titles.titlesJSON;
-                                                    var keys = Data.titles.keys;
-                                                    keys.map(function(key){
-                                                        console.log(titles[key].category==item.category)
-                                                        if(titles[key].category==item.category){
-                                                            titles[key].show = false;
-                                                        }
-
-                                                    })
-                                            }
-                                            if (item.selected == true) {
-                                                _self.innerText = 'check_circle';
-                                                console.log('show',item.category)
-                                                var titles = Data.titles.titlesJSON;
-                                                    var keys = Data.titles.keys;
-                                                    keys.map(function(key){
-                                                        console.log(titles[key].category==item.category)
-                                                        if(titles[key].category==item.category){
-                                                            titles[key].show = true;
-                                                        }
-
-                                                    })
-                                                
-                                            }
-                                            // console.log(item.selected, )
-                                        }
-
-                                    })
-                                // console.log(me.selected.items,this.innerText,Data.categories.categoriesJSON[key]);
-                                // console.log(me.selected.items.indexOf(Data.categories.categoriesJSON[key]))
-
-
-                            }
-                        }))
+                    }))
             )
-        }): '']
-}
+        }) : '']
+    }
 }
 var searchBox = {
     view: function() {
-        return m('input', {
-            onchange: function(e) {
-                var searchString = e.target.value;
-                Data.titles.keys.map(function(key) {
-                    var des = Data.titles.titlesJSON[key].description.toLowerCase()
-                    if (des.indexOf(searchString.toLowerCase()) == -1) {
-                        var categories = categoriesComponent.getSelected()
-                        Data.titles.titlesJSON[key].show = false;
-                    } else {
-                        Data.titles.titlesJSON[key].show = true;
-                    }
-                })
-
-            }
-        })
+        return m('form', { action: '#' },
+            m('.mdl-textfield mdl-js-textfield mdl-textfield--expandable',
+                m('label.mdl-button mdl-js-button mdl-button--icon', { for: 'search' },
+                    m('i.material-icons', 'search')
+                ),
+                m('.mdl-textfield__expandable-holder',
+                    m('input.mdl-textfield__input#search', {
+                        onkeyup: function(e) {
+                            var searchString = e.target.value;
+                            Data.titles.keys.map(function(key) {
+                                var des = Data.titles.titlesJSON[key].description.toLowerCase()
+                                if (des.indexOf(searchString.toLowerCase()) == -1) {
+                                    var categories = categoriesComponent.getSelected()
+                                    Data.titles.titlesJSON[key].show = false;
+                                } else {
+                                    Data.titles.titlesJSON[key].show = true;
+                                }
+                            })
+                        }
+                    })
+                )
+            )
+        )
     }
 }
-header = {
-
+var header = {
     view: function() {
-
-        // Data.categories.keys?console.log(Data.categories.keys):''
         return m('.header', m(searchBox))
     }
 
 }
+
 titlesCards = {
     oninit: Data.titles.fetch,
     view: function(vnode) {
@@ -199,9 +198,10 @@ titlesCards = {
         // var a= categoriesComponent.getSelected()
         // console.log(a)
         return Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
-
             return Data.titles.titlesJSON[key].show ? m('.demo-card-square.mdl-card mdl-shadow--2dp',
-                m('.mdl-card__title mdl-card--expand',
+                m('.mdl-card__title mdl-card--expand',{
+                    style:{background : Data.titles.titlesJSON[key].color }
+                },
                     m('h6.mdl-card__title-text', Data.titles.titlesJSON[key].title)),
                 m('.mdl-card__supporting-text', Data.titles.titlesJSON[key].description,
                     m('.date', Data.titles.titlesJSON[key].modifiedDate),
@@ -225,48 +225,52 @@ titlesCards = {
 
     }
 }
+
 var sideBar = {
     view: function() {
         return m('.sideBar', m(categoriesComponent))
     }
 
 }
+var blogViewHeader = {
+    view: function() {
+        return m('.header.stick',
+            m('button.mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored', {
+                    onclick: function() {
+                        m.route.set('/')
+                    }
+                },
+                m('i.material-icons', 'keyboard_arrow_left')))
+    }
 
-var blogEntry = {
+}
+
+var blogView = {
     oninit: function(vnode) {
         currentIdx = vnode.attrs.id
-
-        Data.post.fetch().then(function() {
-            // console.log("blog entry retrieved")
-        })
+        Data.post.fetch().then(function() {})
 
     },
     view: function(vnode) {
-        return (blogResponse != "") ? m("main.blog", m('',
+        return [m(blogViewHeader), (blogResponse != "") ? m("main", m('.',
             m('.parallax',
-                m('button.mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored', {
-                        onclick: function() {
-                            m.route.set('/')
-
-                        }
-
-                    },
-                    m('i.material-icons', 'keyboard_arrow_left')),
-                m("h1", { class: "title" }, blogResponse.title)),
-            m(".", m.trust(markdown.toHTML(blogResponse.body)))
-        )) : m('')
+                m('h2.title', blogResponse.title)),
+            m("#blog.wrapperBlog", m('.content',m.trust(markdown.toHTML(blogResponse.body)),m('.','something')))
+        )) : m('')]
     }
 }
-
 
 var mainView = {
 
     view: function() {
-        return [m(header), m('.wrapper', m(sideBar), m('boxes', m(titlesCards)))]
+        return [m(header), m('.wrapper',
+            m(sideBar),
+            m('boxes', m(titlesCards)))]
     }
 }
+
 m.route.prefix("#")
 m.route(blog, "/", {
     "/": mainView,
-    "/entry/:id": blogEntry
+    "/entry/:id": blogView
 })

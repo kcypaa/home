@@ -20,4 +20,5 @@ class blog(models.Model):
 class category(models.Model):
 	title = models.CharField(max_length=100, db_index=True)
 	slug = models.SlugField(max_length=100, db_index=True)
+	color = models.CharField(max_length=100, db_index=True,default='#000000')
 
