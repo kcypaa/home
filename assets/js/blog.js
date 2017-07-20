@@ -46,7 +46,7 @@ var Data = {
         titlesJSON: {},
         keys: [],
         fetch: function() {
-            m.request({
+            return m.request({
                     method: "POST",
                     url: server + "/blog/all/",
                     data: { 'field': 'categories' }
@@ -82,14 +82,22 @@ blogComponent = {
 
 categoriesComponent = {
     oninit: function() {
-        this.selected = { items: [] };
-        Data.categories.fetch();
+        self = this;
+        self.selected = { items: [] };
+        Data.categories.fetch().then(function() {
+            self.ready = true;
+            // m.redraw()
+        });
 
     },
-    oncreate: function() {
+    getSelected: function() {
+
+        self.ready = true;
+        // m.redraw()
+        return self.selected
+
 
     },
-
     view: function() {
         var me = this
         return [Data.categories.keys ? Data.categories.keys.map(function(key) {
@@ -109,20 +117,21 @@ categoriesComponent = {
                     m('i.material-icons', {
                         innerText: 'check_circle',
                         onclick: function() {
-                            self = this;
+                            _self = this;
+
                             me.selected.items.map(function(item) {
 
                                 if (item.category == Data.categories.categoriesJSON[key]) {
                                     item.selected = !item.selected
                                     if (item.selected == false) {
-                                        self.innerText = 'cancel';
-                                        console.log(self.innerText)
+                                        _self.innerText = 'cancel';
+                                        // console.log(self.innerText)
                                     }
                                     if (item.selected == true) {
-                                        self.innerText = 'check_circle';
-                                        console.log(self.innerText)
+                                        _self.innerText = 'check_circle';
+                                        // console.log(self.innerText)
                                     }
-                                    console.log(item.selected, )
+                                    // console.log(item.selected, )
                                 }
 
                             })
@@ -145,13 +154,29 @@ header = {
     }
 
 }
-titles = {
+titlesCards = {
     oninit: Data.titles.fetch,
     view: function(vnode) {
-
-
+        var self = this;
+        // var a= categoriesComponent.getSelected()
+        // console.log(a)
         return Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
-            return m('.demo-card-square.mdl-card mdl-shadow--2dp',
+            var categories = categoriesComponent.getSelected()
+
+            var show = true;
+            categories.items.map(function(item) {
+                if (item.category == Data.titles.titlesJSON[key].category) {
+                    console.log(item.category,item.selected)
+                    if (!item.selected){
+                        show =false;    
+                    }
+
+                    
+
+                }
+
+            })
+            return show? m('.demo-card-square.mdl-card mdl-shadow--2dp',
                 m('.mdl-card__title mdl-card--expand',
                     m('h6.mdl-card__title-text', Data.titles.titlesJSON[key].title)),
                 m('.mdl-card__supporting-text', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.Aenan convallis.',
@@ -170,7 +195,8 @@ titles = {
 
                     }, 'View')
                 )
-            )
+            ):m('')
+            
         }) : m('', loader)
 
     }
@@ -209,7 +235,7 @@ var blogEntry = {
 var mainView = {
 
     view: function() {
-        return [m(header), m('.wrapper', m(sideBar), m('boxes', m(titles)))]
+        return [m(header), m('.wrapper', m(sideBar), m('boxes', m(titlesCards)))]
     }
 }
 m.route.prefix("#")
