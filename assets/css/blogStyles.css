@@ -102,7 +102,14 @@ h6.mdl-card__title-text {
     background-size: cover;
 }
 
-
+.wrapper {
+  display: grid;
+  grid-template-columns: 20% 79%;
+  grid-gap: 10px;
+  background-color: #fff;
+  color: #444;
+  overflow-y: hidden;
+}
 
 /* ---- loader ----*/
 

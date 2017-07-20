@@ -81,19 +81,59 @@ blogComponent = {
 }
 
 categoriesComponent = {
-    oninit: Data.categories.fetch,
+    oninit: function() {
+        this.selected = { items: [] };
+        Data.categories.fetch();
+
+    },
+    oncreate: function() {
+
+    },
+
     view: function() {
+        var me = this
+        return [Data.categories.keys ? Data.categories.keys.map(function(key) {
+            return m('span.mdl-chip mdl-chip--deletable',
+                m('span.mdl-chip__text', {
+                    oncreate: function() {
+                        value = Data.categories.categoriesJSON[key]
 
-        return Data.categories.keys ? m('select',{
-                onchange:function(e){
-                    
-                    console.log(e.target.value)
-                }
+                        me.selected.items.push({
+                            category: value,
+                            selected: true
+                        })
+                        console.log(typeof me.selected.items)
+                    }
+                }, Data.categories.categoriesJSON[key]),
+                m('button.mdl-chip__action', {},
+                    m('i.material-icons', {
+                        innerText: 'check_circle',
+                        onclick: function() {
+                            self = this;
+                            me.selected.items.map(function(item) {
 
-            }, Data.categories.keys.map(function(key) {
-            return m('option',
-             Data.categories.categoriesJSON[key])
-        })) : ''
+                                if (item.category == Data.categories.categoriesJSON[key]) {
+                                    item.selected = !item.selected
+                                    if (item.selected == false) {
+                                        self.innerText = 'cancel';
+                                        console.log(self.innerText)
+                                    }
+                                    if (item.selected == true) {
+                                        self.innerText = 'check_circle';
+                                        console.log(self.innerText)
+                                    }
+                                    console.log(item.selected, )
+                                }
+
+                            })
+                            // console.log(me.selected.items,this.innerText,Data.categories.categoriesJSON[key]);
+                            // console.log(me.selected.items.indexOf(Data.categories.categoriesJSON[key]))
+
+
+                        }
+                    }))
+            )
+        }) : '']
     }
 }
 header = {
@@ -101,7 +141,7 @@ header = {
     view: function() {
 
         // Data.categories.keys?console.log(Data.categories.keys):''
-        return m('.header', m(categoriesComponent))
+        return m('.header', 'Header')
     }
 
 }
@@ -135,7 +175,12 @@ titles = {
 
     }
 }
+var sideBar = {
+    view: function() {
+        return m('.sideBar', m(categoriesComponent))
+    }
 
+}
 var blogEntry = {
     oninit: function(vnode) {
         currentIdx = vnode.attrs.id
@@ -164,7 +209,7 @@ var blogEntry = {
 var mainView = {
 
     view: function() {
-        return [m(header), m(titles)]
+        return [m(header), m('.wrapper', m(sideBar), m('boxes', m(titles)))]
     }
 }
 m.route.prefix("#")
