@@ -101,48 +101,86 @@ categoriesComponent = {
     view: function() {
         var me = this
         return [Data.categories.keys ? Data.categories.keys.map(function(key) {
-            return m('span.mdl-chip mdl-chip--deletable',
-                m('span.mdl-chip__text', {
-                    oncreate: function() {
-                        value = Data.categories.categoriesJSON[key]
+                return m('span.mdl-chip mdl-chip--deletable',
+                    m('span.mdl-chip__text', {
+                        oncreate: function() {
+                            value = Data.categories.categoriesJSON[key]
 
-                        me.selected.items.push({
-                            category: value,
-                            selected: true
-                        })
-                        console.log(typeof me.selected.items)
-                    }
-                }, Data.categories.categoriesJSON[key]),
-                m('button.mdl-chip__action', {},
-                    m('i.material-icons', {
-                        innerText: 'check_circle',
-                        onclick: function() {
-                            _self = this;
-
-                            me.selected.items.map(function(item) {
-
-                                if (item.category == Data.categories.categoriesJSON[key]) {
-                                    item.selected = !item.selected
-                                    if (item.selected == false) {
-                                        _self.innerText = 'cancel';
-                                        // console.log(self.innerText)
-                                    }
-                                    if (item.selected == true) {
-                                        _self.innerText = 'check_circle';
-                                        // console.log(self.innerText)
-                                    }
-                                    // console.log(item.selected, )
-                                }
-
+                            me.selected.items.push({
+                                category: value,
+                                selected: true
                             })
-                            // console.log(me.selected.items,this.innerText,Data.categories.categoriesJSON[key]);
-                            // console.log(me.selected.items.indexOf(Data.categories.categoriesJSON[key]))
-
-
+                            // console.log(typeof me.selected.items)
                         }
-                    }))
+                    }, Data.categories.categoriesJSON[key]),
+                    m('button.mdl-chip__action', {},
+                        m('i.material-icons', {
+                                innerText: 'check_circle',
+                                onclick: function() {
+                                    _self = this;
+
+                                    me.selected.items.map(function(item) {
+
+                                            if (item.category == Data.categories.categoriesJSON[key]) {
+                                                item.selected = !item.selected
+                                                if (item.selected == false) {
+                                                    _self.innerText = 'cancel';
+                                                    // console.log('hide',item)
+                                                    var titles = Data.titles.titlesJSON;
+                                                    var keys = Data.titles.keys;
+                                                    keys.map(function(key){
+                                                        console.log(titles[key].category==item.category)
+                                                        if(titles[key].category==item.category){
+                                                            titles[key].show = false;
+                                                        }
+
+                                                    })
+                                            }
+                                            if (item.selected == true) {
+                                                _self.innerText = 'check_circle';
+                                                console.log('show',item.category)
+                                                var titles = Data.titles.titlesJSON;
+                                                    var keys = Data.titles.keys;
+                                                    keys.map(function(key){
+                                                        console.log(titles[key].category==item.category)
+                                                        if(titles[key].category==item.category){
+                                                            titles[key].show = true;
+                                                        }
+
+                                                    })
+                                                
+                                            }
+                                            // console.log(item.selected, )
+                                        }
+
+                                    })
+                                // console.log(me.selected.items,this.innerText,Data.categories.categoriesJSON[key]);
+                                // console.log(me.selected.items.indexOf(Data.categories.categoriesJSON[key]))
+
+
+                            }
+                        }))
             )
-        }) : '']
+        }): '']
+}
+}
+var searchBox = {
+    view: function() {
+        return m('input', {
+            onchange: function(e) {
+                var searchString = e.target.value;
+                Data.titles.keys.map(function(key) {
+                    var des = Data.titles.titlesJSON[key].description.toLowerCase()
+                    if (des.indexOf(searchString.toLowerCase()) == -1) {
+                        var categories = categoriesComponent.getSelected()
+                        Data.titles.titlesJSON[key].show = false;
+                    } else {
+                        Data.titles.titlesJSON[key].show = true;
+                    }
+                })
+
+            }
+        })
     }
 }
 header = {
@@ -150,7 +188,7 @@ header = {
     view: function() {
 
         // Data.categories.keys?console.log(Data.categories.keys):''
-        return m('.header', 'Header')
+        return m('.header', m(searchBox))
     }
 
 }
@@ -161,25 +199,11 @@ titlesCards = {
         // var a= categoriesComponent.getSelected()
         // console.log(a)
         return Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
-            var categories = categoriesComponent.getSelected()
 
-            var show = true;
-            categories.items.map(function(item) {
-                if (item.category == Data.titles.titlesJSON[key].category) {
-                    console.log(item.category,item.selected)
-                    if (!item.selected){
-                        show =false;    
-                    }
-
-                    
-
-                }
-
-            })
-            return show? m('.demo-card-square.mdl-card mdl-shadow--2dp',
+            return Data.titles.titlesJSON[key].show ? m('.demo-card-square.mdl-card mdl-shadow--2dp',
                 m('.mdl-card__title mdl-card--expand',
                     m('h6.mdl-card__title-text', Data.titles.titlesJSON[key].title)),
-                m('.mdl-card__supporting-text', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.Aenan convallis.',
+                m('.mdl-card__supporting-text', Data.titles.titlesJSON[key].description,
                     m('.date', Data.titles.titlesJSON[key].modifiedDate),
                     m('span.mdl-chip', m('span.mdl-chip__text', Data.titles.titlesJSON[key].category))
 
@@ -195,8 +219,8 @@ titlesCards = {
 
                     }, 'View')
                 )
-            ):m('')
-            
+            ) : m('')
+
         }) : m('', loader)
 
     }
@@ -207,12 +231,13 @@ var sideBar = {
     }
 
 }
+
 var blogEntry = {
     oninit: function(vnode) {
         currentIdx = vnode.attrs.id
 
         Data.post.fetch().then(function() {
-            console.log("blog entry retrieved")
+            // console.log("blog entry retrieved")
         })
 
     },
@@ -220,12 +245,14 @@ var blogEntry = {
         return (blogResponse != "") ? m("main.blog", m('',
             m('.parallax',
                 m('button.mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored', {
-                    onclick: function() {
-                        m.route.set('/')
+                        onclick: function() {
+                            m.route.set('/')
 
-                    }
+                        }
 
-                }, m('i.material-icons', 'keyboard_arrow_left')), m("h1", { class: "title" }, blogResponse.title)),
+                    },
+                    m('i.material-icons', 'keyboard_arrow_left')),
+                m("h1", { class: "title" }, blogResponse.title)),
             m(".", m.trust(markdown.toHTML(blogResponse.body)))
         )) : m('')
     }
