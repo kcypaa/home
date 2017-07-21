@@ -19,7 +19,8 @@ var Data = {
                     //     Data.titles.keys = Object.keys(Data.titles.titlesJSON);
                     //     m.redraw()
                     // },1500)
-                    Data.titles.titlesJSON = JSON.parse(result);
+                    // console.log(typeof result)
+                    Data.titles.titlesJSON = result;
                     Data.titles.keys = Object.keys(Data.titles.titlesJSON);
                 })
         }
@@ -34,7 +35,7 @@ var Data = {
                 })
                 .then(function(result) {
 
-                    blogResponse = JSON.parse(result);
+                    blogResponse = result;
 
                     // Data.titles.titlesJSON = JSON.parse(result);
                     // Data.titles.keys = Object.keys(Data.titles.titlesJSON);
@@ -74,7 +75,7 @@ var blogComponent = {
 
 
         return (blogResponse != "") ? m("main.blog", m('',
-            m('.parallax',
+            m('.parallax', { style: "background:black !important" },
                 m("h1", { class: "title" }, blogResponse.title)),
             m(".", m.trust(markdown.toHTML(blogResponse.body)))
         )) : m(loader)
@@ -160,12 +161,12 @@ var categoriesComponent = {
 var searchBox = {
     view: function() {
         return m('form', { action: '#' },
-            m('.mdl-textfield mdl-js-textfield mdl-textfield--expandable',
+            m('.mdl-textfield',
                 m('label.mdl-button mdl-js-button mdl-button--icon', { for: 'search' },
                     m('i.material-icons', 'search')
                 ),
                 m('.mdl-textfield__expandable-holder',
-                    m('input.mdl-textfield__input#search', {
+                    m('input', {
                         onkeyup: function(e) {
                             var searchString = e.target.value;
                             Data.titles.keys.map(function(key) {
@@ -199,9 +200,9 @@ titlesCards = {
         // console.log(a)
         return Data.titles.keys.length > 0 ? Data.titles.keys.map(function(key) {
             return Data.titles.titlesJSON[key].show ? m('.demo-card-square.mdl-card mdl-shadow--2dp',
-                m('.mdl-card__title mdl-card--expand',{
-                    style:{background : Data.titles.titlesJSON[key].color }
-                },
+                m('.mdl-card__title mdl-card--expand', {
+                        style: { background: Data.titles.titlesJSON[key].color }
+                    },
                     m('h6.mdl-card__title-text', Data.titles.titlesJSON[key].title)),
                 m('.mdl-card__supporting-text', Data.titles.titlesJSON[key].description,
                     m('.date', Data.titles.titlesJSON[key].modifiedDate),
@@ -252,10 +253,20 @@ var blogView = {
 
     },
     view: function(vnode) {
+        console.log(blogResponse.background)
         return [m(blogViewHeader), (blogResponse != "") ? m("main", m('.',
-            m('.parallax',
+            m('.parallax', {
+                    style: {
+                        backgroundImage: "url('./laxarem/" + blogResponse.background + "')",
+                        height: "100vh",
+                        backgroundAttachment: "fixed",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                        backgroundSize: "cover"
+                    }
+                },
                 m('h2.title', blogResponse.title)),
-            m("#blog.wrapperBlog", m('.content',m.trust(markdown.toHTML(blogResponse.body)),m('.','something')))
+            m("#blog.wrapperBlog", m('.content', m.trust(markdown.toHTML(blogResponse.body))), m('.', 'something'))
         )) : m('')]
     }
 }

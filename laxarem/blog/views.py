@@ -51,14 +51,16 @@ def allTitles(request):
 				# print(modifiedDate[idx][1])
 
 			
-			jsnData = json.dumps(data)
+			jsnData = data
 			
 		elif (payload_json['field'] == 'post'):
 
 			obj = blog.objects.get(id=payload_json['idx'])
-			
-			data={"body":obj.body,"title":obj.title}
-			jsnData = json.dumps(data)
+			data={"body":obj.body,
+				  "title":obj.title,
+				  "background":str(obj.background)}
+			print(obj.background)
+			jsnData = data
 		elif (payload_json['field'] == 'categories'):
 			categories = category.objects.values_list('id','title')
 			for idx,_category in enumerate(categories):

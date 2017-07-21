@@ -330,12 +330,13 @@ h6.mdl-card__title-text {
     width: 100%;
     text-align: center;
     color: white;
+        text-shadow: 2px 2px #535353;
 }
 
 .parallax {
     /* The image used */
     position: relative;
-    background-image: url("/images/img_parallax.jpg");
+    /*background-image: url("/images/img_parallax.jpg");*/
 
 
     /* Full height */
