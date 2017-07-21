@@ -12,15 +12,12 @@ h4,
 h5,
 h6,
 p,
-blockquote,
-pre,
 a,
 abbr,
 acronym,
 address,
 big,
 cite,
-code,
 del,
 dfn,
 em,
@@ -306,8 +303,11 @@ h6.mdl-card__title-text {
 
 .content>p {
     font-size: 18px !important;
-    line-height: 25px;
+    line-height: 35px;
     color: #888;
+}
+.content>h1,h2,h3 {
+	line-height: 75px;
 }
 
 #blog {
@@ -348,3 +348,20 @@ h6.mdl-card__title-text {
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+/* code */
+pre {
+white-space: pre-wrap;
+white-space: -moz-pre-wrap;
+white-space: -o-pre-wrap;
+word-wrap: break-word;
+background: #F8F8F8;
+}
+
+code {
+font-family: Courier, 'New Courier', monospace;
+font-size: 18px;
+
+
+}
+

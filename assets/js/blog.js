@@ -1,6 +1,8 @@
 blog = document.getElementById("blog");
 blogResponse = ""
+var markdown = new showdown.Converter()
 server = "http://127.0.0.1:8000"
+var backgroundColor;
 var currentIdx
 var loader = m.trust('<div id="fountainG"><div id="fountainG_1" class="fountainG"></div><div id="fountainG_2" class="fountainG"></div><div id="fountainG_3" class="fountainG"></div><div id="fountainG_4" class="fountainG"></div><div id="fountainG_5" class="fountainG"></div><div id="fountainG_6" class="fountainG"></div> <div id="fountainG_7" class="fountainG"></div> <div id="fountainG_8" class="fountainG"></div> </div>')
 var Data = {
@@ -59,6 +61,7 @@ var Data = {
                     //     m.redraw()
                     // },1500)
                     Data.categories.categoriesJSON = JSON.parse(result);
+
                     Data.categories.keys = Object.keys(Data.categories.categoriesJSON);
                     // console.log(Data.categoriesJSON)
                     // Data.titles.keys = Object.keys(Data.titles.titlesJSON);
@@ -77,7 +80,7 @@ var blogComponent = {
         return (blogResponse != "") ? m("main.blog", m('',
             m('.parallax', { style: "background:black !important" },
                 m("h1", { class: "title" }, blogResponse.title)),
-            m(".", m.trust(markdown.toHTML(blogResponse.body)))
+            m(".", m.trust(markdown.makeHtml(blogResponse.body)))
         )) : m(loader)
     }
 }
@@ -214,6 +217,8 @@ titlesCards = {
                     m('a.mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect', {
                         onclick: function() {
                             currentIdx = Data.titles.titlesJSON[key].id;
+                            backgroundColor = Data.titles.titlesJSON[key].color
+                            console.log(backgroundColor)
                             // m.mount(document.body, blogComponent)
                             m.route.set("/entry/" + currentIdx)
                         }
@@ -253,7 +258,8 @@ var blogView = {
 
     },
     view: function(vnode) {
-        console.log(blogResponse.background)
+        console.log(blogResponse)
+
         return [m(blogViewHeader), (blogResponse != "") ? m("main", m('.',
             m('.parallax', {
                     style: {
@@ -265,8 +271,10 @@ var blogView = {
                         backgroundSize: "cover"
                     }
                 },
+
                 m('h2.title', blogResponse.title)),
-            m("#blog.wrapperBlog", m('.content', m.trust(markdown.toHTML(blogResponse.body))), m('.', 'something'))
+            m("#blog.wrapperBlog", m('.content', m.trust(markdown.makeHtml(blogResponse.body))),
+                m('.', 'something'))
         )) : m('')]
     }
 }
