@@ -1,7 +1,9 @@
 blog = document.getElementById("blog");
 blogResponse = ""
+
 var markdown = new showdown.Converter()
 server = "http://127.0.0.1:8000"
+
 var backgroundColor;
 var currentIdx
 var loader = m.trust('<div id="fountainG"><div id="fountainG_1" class="fountainG"></div><div id="fountainG_2" class="fountainG"></div><div id="fountainG_3" class="fountainG"></div><div id="fountainG_4" class="fountainG"></div><div id="fountainG_5" class="fountainG"></div><div id="fountainG_6" class="fountainG"></div> <div id="fountainG_7" class="fountainG"></div> <div id="fountainG_8" class="fountainG"></div> </div>')
@@ -274,7 +276,7 @@ var blogView = {
 
                 m('h2.title', blogResponse.title)),
             m("#blog.wrapperBlog", m('.content', m.trust(markdown.makeHtml(blogResponse.body))),
-                m('.', 'something'))
+                m('.', 'Sidebar'))
         )) : m('')]
     }
 }
@@ -288,7 +290,7 @@ var mainView = {
     }
 }
 
-m.route.prefix("#")
+m.route.prefix("")
 m.route(blog, "/", {
     "/": mainView,
     "/entry/:id": blogView

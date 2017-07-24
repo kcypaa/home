@@ -8,16 +8,42 @@ import time
 import datetime 
 from django.views.decorators.csrf import csrf_exempt
 # data = students(studentId=2269)
-
+#For user agents:
+from ua_parser import user_agent_parser
+import pprint
+import telegram
+try:
+	bot = telegram.Bot(token='408944874:AAGCpMHYscl_5QNh8STPzSeS57R51xH7vMY')
+	print('BOT:::::',bot.get_me())
+except:
+	print('Bot not running!')
 # Create your views here.
-@csrf_exempt
+pp = pprint.PrettyPrinter(indent=4)
+
+def hit(request):
+	ua_string=request.META.get('HTTP_USER_AGENT',None)
+	parsed_ua = user_agent_parser.Parse(ua_string)
+	pp.pprint(parsed_ua)
+	try:
+		bot.send_message(chat_id='-1001103347409', 
+			text=pp.pformat(parsed_ua)
+			)
+	except:
+		print('too many messages')
+	# print(chat_id)
+	# 
+
+@csrf_exempt	
 def allTitles(request):
+	hit(request);
 	data={}
 	# data = json.loads(d)
 	# a = classes.objects.get(id=id)
 	if request.method == 'GET':
+
 		return HttpResponse('no blogs to see here!')
 	if request.method == 'POST':
+		
 		payload = request.body
 		payload_unicode = request.body.decode('utf-8')
 		payload_json = json.loads(payload_unicode)
@@ -30,7 +56,7 @@ def allTitles(request):
 			for idx,title in enumerate(titles):
 				if title[5]=='':
 					post = blog.objects.get(id=title[0])
-					print(post.body)
+					# print(post.body)
 
 				cat='undefined'
 				color = '#000000'
@@ -82,3 +108,7 @@ def convertDatetimeToString(o):
 	elif isinstance(o, datetime.datetime):
 	    return o.strftime("%s %s" % (DATE_FORMAT, TIME_FORMAT))
 # Create your views here.
+@csrf_exempt
+def rootHit(request):
+	print(">>>>>>>",request.META.get('HTTP_USER_AGENT',None))
+	return JsonResponse("{}",safe=False)
