@@ -221,8 +221,9 @@ titlesCards = {
                             currentIdx = Data.titles.titlesJSON[key].id;
                             backgroundColor = Data.titles.titlesJSON[key].color
                             console.log(backgroundColor)
-                            // m.mount(document.body, blogComponent)
-                            m.route.set("/entry/" + currentIdx)
+                            // m.mount(document.body, blogComponent)key=key.replace(" ","_");
+                            m.route.set("/post/" + currentIdx)
+                            m.route.set("/post/" + currentIdx+"/"+Data.titles.titlesJSON[key].title.replace(/ /g,"_"))
                         }
 
                     }, 'View')
@@ -255,8 +256,9 @@ var blogViewHeader = {
 
 var blogView = {
     oninit: function(vnode) {
+        console.log(vnode.attrs)
         currentIdx = vnode.attrs.id
-        Data.post.fetch().then(function() {})
+        Data.post.fetch()
 
     },
     view: function(vnode) {
@@ -293,5 +295,5 @@ var mainView = {
 m.route.prefix("")
 m.route(blog, "/", {
     "/": mainView,
-    "/entry/:id": blogView
+    "/post/:id/:title": blogView
 })

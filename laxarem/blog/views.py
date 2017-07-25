@@ -22,12 +22,19 @@ pp = pprint.PrettyPrinter(indent=4)
 
 def hit(request):
 	ua_string=request.META.get('HTTP_USER_AGENT',None)
-	parsed_ua = user_agent_parser.Parse(ua_string)
-	pp.pprint(parsed_ua)
+	parsed_ua = user_agent_parser.Parse(ua_string)	
+	# print("user>>>>>",parsed_ua['user_agent'])
+	# print("string>>>>>",parsed_ua['string'])
+	source=request.META.get('REMOTE_ADDR',None)
+	
+	# parsed_ua[0]['source'].append(source);
+	print(source)
+	parsed_ua['source']=source
 	try:
 		bot.send_message(chat_id='-1001103347409', 
 			text=pp.pformat(parsed_ua)
 			)
+
 	except:
 		print('too many messages')
 	# print(chat_id)
